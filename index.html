@@ -105,6 +105,9 @@
     <canvas id="canvas"></canvas>
 
     <script type="text/javascript">
+      var myURL = window.location;
+      var searchParams = new URLSearchParams(myURL.search);
+
       const colors = [
         "#eec996",
         "#8fb7d3",
@@ -177,7 +180,7 @@
         // ctx.font="20px";
         ctx.fillStyle = colors[i % 18];
         ctx.fillText(
-          "李柏涵",
+          searchParams.get('name'),
           this.x - this.width * 0.5,
           this.y - this.height * 0.5,
           this.width,

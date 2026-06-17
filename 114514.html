@@ -1,0 +1,203 @@
+<title>114514 式连分数转换器</title>
+<meta charset="UTF-8" />
+<h1>114514 式连分数转换器</h1>
+<input id="number" type="text" placeholder="待转换值" />
+<input id="tolerance" type="text" placeholder="容许误差" />
+<button onclick="check()">转换</button>
+<div>
+  <p>预设</p>
+  <input class="pre" type="number" placeholder="b" />
+  <input class="pre" type="number" placeholder="c" />
+  <input class="pre" type="number" placeholder="d" />
+  <input class="pre" type="number" placeholder="e" />
+  <input class="pre" type="number" placeholder="f" />
+  <input class="pre" type="number" placeholder="g" />
+</div>
+<main>
+  <div
+    style="
+      display: flex;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+    "
+  >
+    <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+      <mrow>
+        <mi class="val">a</mi>
+        <mo>+</mo>
+        <mfrac displaystyle="true">
+          <mi class="val">b</mi>
+          <mrow>
+            <mn mathcolor="red">1</mn>
+            <mo>+</mo>
+            <mfrac displaystyle="true">
+              <mi class="val">c</mi>
+              <mrow>
+                <mn mathcolor="red">1</mn>
+                <mo>+</mo>
+                <mfrac displaystyle="true">
+                  <mi class="val">d</mi>
+                  <mrow>
+                    <mn mathcolor="red">4</mn>
+                    <mo>+</mo>
+                    <mfrac displaystyle="true">
+                      <mi class="val">e</mi>
+                      <mrow>
+                        <mn mathcolor="red">5</mn>
+                        <mo>+</mo>
+                        <mfrac displaystyle="true">
+                          <mi class="val">f</mi>
+                          <mrow>
+                            <mn mathcolor="red">1</mn>
+                            <mo>+</mo>
+                            <mfrac displaystyle="true">
+                              <mi class="val">g</mi>
+                              <mn mathcolor="red">4</mn>
+                            </mfrac>
+                          </mrow>
+                        </mfrac>
+                      </mrow>
+                    </mfrac>
+                  </mrow>
+                </mfrac>
+              </mrow>
+            </mfrac>
+          </mrow>
+        </mfrac>
+      </mrow>
+    </math>
+    <button onclick="">复制</button>
+  </div>
+</main>
+<script>
+  /**
+   * @param {number} n
+   * @param {number} tolerance
+   * @param {number[]} pres [b, c, d, e, f, g]
+   * @return {number[][]} [[a, b, c, d, e, f, g], ...]
+   */
+  function solve(n, tolerance, pres) {
+    var r = [Math.floor(n), NaN, NaN, NaN, NaN, NaN, NaN];
+    /** @type {number[][]} [r, ...] */
+    var rs = [];
+    var l = Infinity;
+    n -= r[0];
+    const range = pres.map((x) =>
+      isNaN(x) ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] : [x],
+    );
+    range[0].forEach((b) => {
+      range[1].forEach((c) => {
+        range[2].forEach((d) => {
+          range[3].forEach((e) => {
+            range[4].forEach((f) => {
+              range[5].forEach((g) => {
+                let v = b / (1 + c / (1 + d / (4 + e / (5 + f / (1 + g / 4)))));
+                if (!isNaN(tolerance)) {
+                  if (Math.abs(v - n) <= tolerance) {
+                    rs.push([r[0], b, c, d, e, f, g]);
+                  }
+                } else if (Math.abs(v - n) < l) {
+                  r = [r[0], b, c, d, e, f, g];
+                  l = Math.abs(v - n);
+                }
+              });
+            });
+          });
+        });
+      });
+    });
+    return rs.length > 0 ? rs : [r];
+  }
+  function check() {
+    const n = Number(document.getElementById("number").value);
+    const tolerance =
+      document.getElementById("tolerance").value === ""
+        ? NaN
+        : Number(document.getElementById("tolerance").value);
+    /** @type {number[]} [b, c, d, e, f, g] */
+    const pres = Array.from(document.getElementsByClassName("pre"), (x) =>
+      x.value === "" ? NaN : Number(x.value),
+    );
+    const vals = document.getElementsByClassName("val");
+    var rs = solve(n, tolerance, pres);
+    const main = document.getElementsByTagName("main")[0];
+    main.innerHTML = "";
+    for (var r of rs.slice(0, 100)) {
+      const [a, b, c, d, e, f, g] = r;
+      const tex = `${a}+\\cfrac{${b}}
+{
+    {\\color{red}{1}}
+    +\\cfrac{${c}}{
+        {\\color{red}{1}}
+        +\\cfrac{${d}}{
+            {\\color{red}{4}}
+            +\\cfrac{${e}}{
+                {\\color{red}{5}}
+                +\\cfrac{${f}}{
+                    {\\color{red}{1}}
+                    +\\cfrac{${g}}{
+                        {\\color{red}{4}}
+                    }
+                }
+            }
+        }
+    }
+}`;
+      const div = document.createElement("div");
+      div.style.display = "flex";
+      div.style.justifyContent = "center";
+      div.style.alignItems = "center";
+      div.style.width = "100%";
+      div.innerHTML = `
+        <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+          <mrow>
+            <mn class="val">${a}</mn>
+            <mo>+</mo>
+            <mfrac displaystyle="true">
+              <mn class="val">${b}</mn>
+              <mrow>
+                <mn mathcolor="red">1</mn>
+                <mo>+</mo>
+                <mfrac displaystyle="true">
+                  <mn class="val">${c}</mn>
+                  <mrow>
+                    <mn mathcolor="red">1</mn>
+                    <mo>+</mo>
+                    <mfrac displaystyle="true">
+                      <mn class="val">${d}</mn>
+                      <mrow>
+                        <mn mathcolor="red">4</mn>
+                        <mo>+</mo>
+                        <mfrac displaystyle="true">
+                          <mn class="val">${e}</mn>
+                          <mrow>
+                            <mn mathcolor="red">5</mn>
+                            <mo>+</mo>
+                            <mfrac displaystyle="true">
+                              <mn class="val">${f}</mn>
+                              <mrow>
+                                <mn mathcolor="red">1</mn>
+                                <mo>+</mo>
+                                <mfrac displaystyle="true">
+                                  <mn class="val">${g}</mn>
+                                  <mn mathcolor="red">4</mn>
+                                </mfrac>
+                              </mrow>
+                            </mfrac>
+                          </mrow>
+                        </mfrac>
+                      </mrow>
+                    </mfrac>
+                  </mrow>
+                </mfrac>
+              </mrow>
+            </mfrac>
+          </mrow>
+        </math>
+        <button onclick="navigator.clipboard.writeText(\`${tex}\`)">复制</button>
+      `;
+      main.appendChild(div);
+    }
+  }
+</script>

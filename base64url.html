@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML Viewer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #1a1a2e;
+        transition: background 0.3s ease;
+      }
+      html.light,
+      html.light body {
+        background: #f5f5f5;
+      }
+      #viewer {
+        width: 100vw;
+        height: 100vh;
+        border: none;
+        display: block;
+      }
+      #fallback {
+        display: none;
+        width: 100vw;
+        height: 100vh;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: #e0e0e0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        text-align: center;
+        padding: 2rem;
+        transition: color 0.3s ease;
+      }
+      html.light #fallback {
+        color: #444;
+      }
+      #fallback h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #fff;
+        transition: color 0.3s ease;
+      }
+      html.light #fallback h1 {
+        color: #1a1a2e;
+      }
+      #fallback p {
+        color: #888;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        max-width: 480px;
+        transition: color 0.3s ease;
+      }
+      html.light #fallback p {
+        color: #666;
+      }
+      #fallback code {
+        background: #16213e;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-family: "SF Mono", Monaco, monospace;
+        font-size: 0.85rem;
+        color: #e94560;
+        transition:
+          background 0.3s ease,
+          color 0.3s ease;
+      }
+      html.light #fallback code {
+        background: #e8e8e8;
+        color: #c0392b;
+      }
+      #fallback .example {
+        margin-top: 1.5rem;
+        background: #16213e;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        word-break: break-all;
+        font-family: "SF Mono", Monaco, monospace;
+        font-size: 0.8rem;
+        color: #a0a0a0;
+        max-width: 90vw;
+        text-align: left;
+        line-height: 1.8;
+        transition:
+          background 0.3s ease,
+          color 0.3s ease;
+      }
+      html.light #fallback .example {
+        background: #e8e8e8;
+        color: #666;
+      }
+      #fallback .example span {
+        color: #4ecca3;
+        transition: color 0.3s ease;
+      }
+      html.light #fallback .example span {
+        color: #27ae60;
+      }
+      #watermark {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        z-index: 2147483647;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.35);
+        background: rgba(0, 0, 0, 0.25);
+        padding: 6px 12px;
+        border-radius: 6px;
+        backdrop-filter: blur(4px);
+        pointer-events: auto;
+        user-select: none;
+        transition:
+          color 0.2s ease,
+          background 0.3s ease;
+      }
+      html.light #watermark {
+        color: rgba(0, 0, 0, 0.4);
+        background: rgba(255, 255, 255, 0.5);
+      }
+      #watermark:hover {
+        color: rgba(255, 255, 255, 0.7);
+      }
+      html.light #watermark:hover {
+        color: rgba(0, 0, 0, 0.7);
+      }
+      #watermark a {
+        color: inherit;
+        text-decoration: none;
+      }
+      #watermark a:hover {
+        text-decoration: underline;
+      }
+      #theme-toggle {
+        position: fixed;
+        bottom: 16px;
+        left: 16px;
+        z-index: 2147483647;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.1rem;
+        cursor: pointer;
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.3s ease,
+          color 0.3s ease;
+      }
+      html.light #theme-toggle {
+        background: rgba(0, 0, 0, 0.08);
+        color: rgba(0, 0, 0, 0.6);
+      }
+      #theme-toggle:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      html.light #theme-toggle:hover {
+        background: rgba(0, 0, 0, 0.15);
+      }
+      #error-msg {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2147483647;
+        background: rgba(0, 0, 0, 0.8);
+        color: #ff6b6b;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-family: "SF Mono", Monaco, monospace;
+        font-size: 0.9rem;
+        display: none;
+        backdrop-filter: blur(8px);
+      }
+      html.light #error-msg {
+        background: rgba(255, 255, 255, 0.9);
+        color: #c0392b;
+      }
+    </style>
+    <base target="_blank" />
+  </head>
+  <body>
+    <iframe
+      id="viewer"
+      sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-modals"
+    ></iframe>
+
+    <div id="fallback">
+      <h1>⚡ HTML Viewer</h1>
+      <p>在地址栏传入 <code>#</code> 参数来加载内容</p>
+      <div class="example">
+        <span>// 普通 base64 HTML</span><br />
+        #data:text/html;base64,PGgxPkhlbGxvPC9oMT4=<br /><br />
+        <span>// gzip 压缩后的 base64（自动检测解压）</span><br />
+        #data:application/gzip;base64,H4sI...<br /><br />
+        <span>// 外部 URL</span><br />
+        #https://example.com
+      </div>
+    </div>
+
+    <div id="watermark">
+      ©2026 <a href="https://expector.netlify.app/">Expector</a>
+    </div>
+
+    <button id="theme-toggle" title="切换主题">🌙</button>
+    <div id="error-msg"></div>
+
+    <script>
+      (function () {
+        const html = document.documentElement;
+        const iframe = document.getElementById("viewer");
+        const fallback = document.getElementById("fallback");
+        const themeToggle = document.getElementById("theme-toggle");
+        const errorMsg = document.getElementById("error-msg");
+        const src = location.hash.slice(1);
+
+        // 主题管理
+        const savedTheme = localStorage.getItem("html-viewer-theme");
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        let isDark = savedTheme ? savedTheme === "dark" : prefersDark;
+
+        function applyTheme() {
+          if (isDark) {
+            html.classList.remove("light");
+            themeToggle.textContent = "🌙";
+            themeToggle.title = "切换为浅色主题";
+            localStorage.setItem("html-viewer-theme", "dark");
+          } else {
+            html.classList.add("light");
+            themeToggle.textContent = "☀️";
+            themeToggle.title = "切换为深色主题";
+            localStorage.setItem("html-viewer-theme", "light");
+          }
+        }
+
+        themeToggle.addEventListener("click", () => {
+          isDark = !isDark;
+          applyTheme();
+        });
+
+        applyTheme();
+
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", (e) => {
+            if (!localStorage.getItem("html-viewer-theme")) {
+              isDark = e.matches;
+              applyTheme();
+            }
+          });
+
+        // base64 工具函数
+        function base64ToUint8Array(base64) {
+          const binary = atob(base64.replace(/-/g, "+").replace(/_/g, "/"));
+          const bytes = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+          }
+          return bytes;
+        }
+
+        function uint8ArrayToBase64(bytes) {
+          let binary = "";
+          for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          return btoa(binary);
+        }
+
+        // gzip 解压
+        async function gunzip(uint8Array) {
+          const stream = new ReadableStream({
+            start(controller) {
+              controller.enqueue(uint8Array);
+              controller.close();
+            },
+          });
+          const decompressed = stream.pipeThrough(
+            new DecompressionStream("gzip"),
+          );
+          const reader = decompressed.getReader();
+          const chunks = [];
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+          }
+          const totalLength = chunks.reduce(
+            (sum, chunk) => sum + chunk.length,
+            0,
+          );
+          const result = new Uint8Array(totalLength);
+          let offset = 0;
+          for (const chunk of chunks) {
+            result.set(chunk, offset);
+            offset += chunk.length;
+          }
+          return result;
+        }
+
+        // 检测是否为 gzip 数据
+        function isGzip(data) {
+          return data[0] === 0x1f && data[1] === 0x8b;
+        }
+
+        // 从 data URI 提取信息
+        function parseDataURI(uri) {
+          const match = uri.match(/^data:([^;,]+)?(?:;([^,]+))?,(.*)$/);
+          if (!match) return null;
+          return {
+            mimeType: match[1] || "text/plain",
+            params: match[2] || "",
+            data: match[3],
+          };
+        }
+
+        // 显示错误
+        function showError(msg) {
+          errorMsg.textContent = msg;
+          errorMsg.style.display = "block";
+          setTimeout(() => {
+            errorMsg.style.display = "none";
+          }, 5000);
+        }
+
+        // 加载内容
+        async function loadContent() {
+          if (!src) {
+            iframe.style.display = "none";
+            fallback.style.display = "flex";
+            return;
+          }
+
+          // 外部 URL
+          if (!src.startsWith("data:")) {
+            iframe.src = src;
+            tryGetTitle();
+            return;
+          }
+
+          // 解析 data URI
+          const parsed = parseDataURI(src);
+          if (!parsed) {
+            showError("无效的 data URI");
+            return;
+          }
+
+          try {
+            let bytes = base64ToUint8Array(parsed.data);
+
+            // 检测并解压 gzip
+            if (
+              isGzip(bytes) ||
+              parsed.mimeType === "application/gzip" ||
+              parsed.params.includes("gzip")
+            ) {
+              try {
+                bytes = await gunzip(bytes);
+              } catch (e) {
+                showError("gzip 解压失败: " + e.message);
+                return;
+              }
+            }
+
+            // 解码为文本
+            const decoder = new TextDecoder("utf-8");
+            const htmlContent = decoder.decode(bytes);
+
+            // 写入 iframe
+            iframe.srcdoc = htmlContent;
+
+            // 提取标题
+            const titleMatch = htmlContent.match(
+              /<title[^>]*>([^<]*)<\/title>/i,
+            );
+            if (titleMatch && titleMatch[1]) {
+              document.title = titleMatch[1] + " | HTML Viewer";
+            }
+          } catch (e) {
+            showError("解析失败: " + e.message);
+          }
+        }
+
+        // 尝试获取 iframe 标题（同域时）
+        function tryGetTitle() {
+          iframe.addEventListener("load", () => {
+            try {
+              const iframeTitle =
+                iframe.contentDocument?.title ||
+                iframe.contentWindow?.document?.title;
+              if (iframeTitle) {
+                document.title = iframeTitle + " | HTML Viewer";
+              }
+            } catch (e) {
+              // 跨域限制
+            }
+          });
+        }
+
+        loadContent();
+      })();
+    </script>
+  </body>
+</html>

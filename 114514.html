@@ -195,7 +195,7 @@
             </mfrac>
           </mrow>
         </math>
-        <button onclick="navigator.clipboard.writeText(\`${tex}\`)">复制</button>
+        <button onclick="navigator.clipboard.writeText(String.raw\`${tex}\`)">复制</button>
       `;
       main.appendChild(div);
     }

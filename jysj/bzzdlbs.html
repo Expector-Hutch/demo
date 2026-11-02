@@ -203,9 +203,14 @@
             border-radius: 4px; color: var(--text-secondary);
         }
 
-        /* ---------- 表格视图 ---------- */
-        .table-wrap { max-width: 1400px; margin: 0 auto; overflow-x: auto; }
-        .grid-table { display: grid; gap: 10px; min-width: 900px; }
+        /* ---------- 表格视图：自适应宽度 ---------- */
+        .table-wrap { max-width: 1400px; margin: 0 auto; width: 100%; }
+
+        .grid-table {
+            display: grid;
+            gap: 10px;
+            width: 100%;
+        }
 
         /* 左上角：对角线分割的双三角形 */
         .grid-corner {
@@ -233,7 +238,6 @@
             width: 0;
             height: 0;
         }
-        /* 左下：向下小三角，指向行维度 */
         .corner-down {
             left: 18px;
             bottom: 14px;
@@ -242,7 +246,6 @@
             border-top: 7px solid var(--accent-gold);
             filter: drop-shadow(0 1px 2px rgba(201,169,110,0.4));
         }
-        /* 右上：向右小三角，指向列维度 */
         .corner-right {
             right: 14px;
             top: 18px;
@@ -253,25 +256,42 @@
         }
 
         .grid-header {
-            background: var(--bg-card); border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md); padding: 12px 10px;
-            text-align: center; font-size: 13px; font-weight: 600;
-            color: var(--accent-gold); letter-spacing: 0.5px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-gold);
+            letter-spacing: 0.5px;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .grid-cell {
-            background: var(--bg-card); border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md); padding: 8px;
-            max-height: 340px; overflow-y: auto;
-            scrollbar-width: thin; scrollbar-color: var(--border-glow) transparent;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 8px;
+            max-height: 340px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-width: 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-glow) transparent;
         }
         .grid-cell::-webkit-scrollbar { width: 5px; }
         .grid-cell::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 4px; }
+
         .clarity-group { margin-bottom: 8px; }
         .clarity-group:last-child { margin-bottom: 0; }
         .clarity-label {
             font-size: 11px; font-weight: 600; padding: 4px 6px;
             margin-bottom: 4px; border-bottom: 1px solid var(--border-subtle);
             letter-spacing: 0.3px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .tier-blue { color: var(--tier-blue); }
         .tier-purple { color: var(--tier-purple); }
@@ -283,14 +303,18 @@
             padding: 5px 6px; border-radius: var(--radius-sm);
             cursor: pointer; transition: background 0.15s; font-size: 12px;
             border: 1px solid transparent;
+            min-width: 0;
         }
         .entry-item:hover { background: var(--bg-card-hover); }
         .entry-item.owned { background: var(--owned-bg); border-color: var(--owned-border); }
         .entry-color {
-            flex: 1; min-width: 0; white-space: nowrap; overflow: hidden;
-            text-overflow: ellipsis; color: var(--text-primary);
+            flex: 1 1 0;
+            min-width: 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            color: var(--text-primary);
         }
         .entry-value {
+            flex-shrink: 0;
             font-size: 11px; color: var(--text-secondary); white-space: nowrap;
             font-variant-numeric: tabular-nums;
         }
@@ -421,7 +445,6 @@
             .header-stats { margin-left: 0; width: 100%; justify-content: flex-start; }
             .filters { padding: 12px 14px; gap: 10px; }
             .filter-item { min-width: 100px; }
-            .grid-table { min-width: 700px; }
             .grid-cell { max-height: 260px; }
             .single-card { padding: 24px 20px; }
             .special-card { flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px 18px; }
@@ -705,13 +728,24 @@
             requestToggle(SPECIAL_ID, e.ch, e.fr, e.cl, e.co);
         }
 
-        // ========== 表格视图 ==========
+        // ========== 表格视图（自适应宽度 + 自动隐藏无匹配行列） ==========
         function renderTable(unfilteredKeys, content) {
             const rowKey = unfilteredKeys[0];
             const colKey = unfilteredKeys[1];
             const remainingKeys = unfilteredKeys.slice(2);
             const rowList = getAxisList(rowKey);
             const colList = getAxisList(colKey);
+
+            const allMatching = NORMAL_ENTRIES.filter(e => entryMatchesFilters(e));
+
+            const visibleRows = rowList.filter(r => {
+                const rRaw = getDimRawValue(rowKey, r);
+                return allMatching.some(e => getEntryDimValue(e, rowKey) === rRaw);
+            });
+            const visibleCols = colList.filter(c => {
+                const cRaw = getDimRawValue(colKey, c);
+                return allMatching.some(e => getEntryDimValue(e, colKey) === cRaw);
+            });
 
             document.getElementById('view-info').innerHTML =
                 `<span class="tag">表格视图</span>` +
@@ -720,10 +754,15 @@
                 `列：<span style="color:var(--accent-gold)">${DIM_MAP[colKey].label}</span>` +
                 `　剩余未筛选：${remainingKeys.map(k => DIM_MAP[k].label).join('、') || '无'}`;
 
-            const gridStyle = `grid-template-columns: 120px repeat(${colList.length}, 1fr);`;
+            if (visibleRows.length === 0 || visibleCols.length === 0) {
+                content.innerHTML = '<div class="empty-hint">无匹配条目</div>';
+                return;
+            }
+
+            // 行头使用 minmax(70px, 110px)，数据列使用 minmax(0, 1fr) 允许收缩并触发文字截断
+            const gridStyle = `grid-template-columns: minmax(70px, 110px) repeat(${visibleCols.length}, minmax(0, 1fr));`;
             let html = `<div class="table-wrap"><div class="grid-table" style="${gridStyle}">`;
 
-            // 左上角：对角线分隔 + 双三角形
             html += `
                 <div class="grid-corner" title="${DIM_MAP[rowKey].label} ↓ / ${DIM_MAP[colKey].label} →">
                     <div class="corner-arrow corner-down"></div>
@@ -731,16 +770,18 @@
                 </div>
             `;
 
-            colList.forEach(c => {
-                html += `<div class="grid-header"><span class="${c.cls || ''}">${c.name}</span></div>`;
+            visibleCols.forEach(c => {
+                html += `<div class="grid-header" title="${c.name}"><span class="${c.cls || ''}">${c.name}</span></div>`;
             });
-            rowList.forEach(r => {
-                html += `<div class="grid-header" style="text-align:left;padding-left:16px;"><span class="${r.cls || ''}">${r.name}</span></div>`;
-                colList.forEach(c => {
+
+            visibleRows.forEach(r => {
+                html += `<div class="grid-header" style="text-align:left;padding-left:12px;" title="${r.name}"><span class="${r.cls || ''}">${r.name}</span></div>`;
+                visibleCols.forEach(c => {
                     const cellEntries = getMatchingEntries(rowKey, getDimRawValue(rowKey, r), colKey, getDimRawValue(colKey, c));
                     html += `<div class="grid-cell">${renderCell(cellEntries, remainingKeys, rowKey, colKey)}</div>`;
                 });
             });
+
             html += `</div></div>`;
             content.innerHTML = html;
         }
@@ -801,7 +842,6 @@
             const clarityCls = CLARITIES[entry.cl].cls;
             const colorName = COLORS[entry.co];
 
-            // 有属性前缀（颜色）时，省略“被诅咒的蓝宝石”字样
             const showColorName = remainingKeys.includes('color') && groupBy !== 'color';
 
             let text;

@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加页手记 · 项链收集图鉴</title>
+    <style>
+        :root {
+            --bg-deep: #0f0f12;
+            --bg-card: #1a1a20;
+            --bg-card-hover: #22222a;
+            --border-subtle: #2a2a33;
+            --border-glow: #3a3a48;
+            --text-primary: #e8e6e3;
+            --text-secondary: #8a8a9a;
+            --text-muted: #55555f;
+            --accent-gold: #c9a96e;
+            --accent-gold-dim: #8a6d3b;
+            --tier-blue: #5b9bd5;
+            --tier-purple: #a855f7;
+            --tier-gold: #f0b90b;
+            --tier-red: #ef4444;
+            --owned-bg: #1e2a1e;
+            --owned-border: #3a5a3a;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.6);
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            padding: 24px 20px 60px;
+            background-image:
+                radial-gradient(ellipse at 20% 0%, rgba(201, 169, 110, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 100%, rgba(168, 85, 247, 0.03) 0%, transparent 60%);
+        }
+
+        /* ---------- 页头 ---------- */
+        .header {
+            display: flex; align-items: center; gap: 16px;
+            max-width: 1400px; margin: 0 auto 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .header-icon {
+            width: 52px; height: 52px;
+            border-radius: var(--radius-md);
+            object-fit: contain;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            padding: 6px;
+        }
+        .header-text h1 {
+            font-size: 22px; font-weight: 600; letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #e8d5a3, #c9a96e);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header-text p { font-size: 12px; color: var(--text-secondary); margin-top: 4px; letter-spacing: 0.3px; }
+        .header-stats { margin-left: auto; display: flex; gap: 20px; font-size: 13px; color: var(--text-secondary); }
+        .header-stats span strong { color: var(--accent-gold); font-weight: 600; }
+
+        /* ---------- 终极收藏卡片 ---------- */
+        .special-section { max-width: 1400px; margin: 0 auto 18px; }
+
+        .special-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 18px 26px;
+            background: linear-gradient(135deg, rgba(201,169,110,0.10) 0%, rgba(201,169,110,0.03) 100%);
+            border: 1.5px solid rgba(201,169,110,0.40);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 24px rgba(201,169,110,0.06), inset 0 1px 0 rgba(255,215,120,0.08);
+            transition: all 0.3s;
+            flex-wrap: wrap;
+        }
+
+        .special-icon {
+            font-size: 40px;
+            line-height: 1;
+            filter: drop-shadow(0 0 12px rgba(201,169,110,0.5));
+            flex-shrink: 0;
+        }
+
+        .special-body { flex: 1; min-width: 200px; }
+
+        .special-label {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            color: var(--accent-gold);
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .special-name {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            line-height: 1.5;
+        }
+
+        .special-name .sep { color: var(--text-muted); margin: 0 4px; }
+
+        .special-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
+        .special-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--tier-red);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 12px rgba(239,68,68,0.3);
+        }
+
+        .special-btn {
+            padding: 10px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: var(--font-sans);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--accent-gold);
+            background: var(--accent-gold);
+            color: #0f0f12;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .special-btn:hover { background: #d4b87a; }
+
+        .special-btn.owned {
+            background: transparent;
+            border-color: var(--owned-border);
+            color: #4ade80;
+        }
+
+        .special-btn.owned:hover { background: var(--owned-bg); }
+
+        /* ---------- 筛选栏 ---------- */
+        .filters {
+            max-width: 1400px; margin: 0 auto 16px;
+            display: flex; flex-wrap: wrap; gap: 14px;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            align-items: flex-end;
+        }
+        .filter-item { display: flex; flex-direction: column; gap: 6px; min-width: 130px; flex: 1; }
+        .filter-item label { font-size: 11px; color: var(--text-secondary); letter-spacing: 0.3px; }
+        .filter-item select {
+            padding: 8px 12px; background: var(--bg-deep);
+            border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+            color: var(--text-primary); font-size: 13px; font-family: var(--font-sans);
+            cursor: pointer; outline: none; transition: border-color 0.2s;
+        }
+        .filter-item select:hover { border-color: var(--border-glow); }
+        .filter-item select:focus { border-color: var(--accent-gold-dim); }
+
+        .btn-action {
+            padding: 8px 18px; background: transparent;
+            border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+            color: var(--text-secondary); font-size: 12px; font-family: var(--font-sans);
+            cursor: pointer; transition: all 0.2s; white-space: nowrap;
+            align-self: flex-end;
+        }
+        .btn-action:hover { background: var(--bg-card-hover); color: var(--text-primary); border-color: var(--border-glow); }
+        .btn-action.gold {
+            border-color: var(--accent-gold-dim);
+            color: var(--accent-gold);
+        }
+        .btn-action.gold:hover {
+            background: rgba(201,169,110,0.10);
+            border-color: var(--accent-gold);
+        }
+
+        /* ---------- 视图信息 ---------- */
+        .view-info {
+            max-width: 1400px; margin: 0 auto 20px;
+            font-size: 12px; color: var(--text-muted);
+            padding-left: 4px;
+            letter-spacing: 0.3px;
+        }
+        .view-info .tag {
+            display: inline-block;
+            padding: 2px 8px; margin-right: 6px;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 4px; color: var(--text-secondary);
+        }
+
+        /* ---------- 表格视图 ---------- */
+        .table-wrap { max-width: 1400px; margin: 0 auto; overflow-x: auto; }
+        .grid-table { display: grid; gap: 10px; min-width: 900px; }
+
+        /* 左上角：对角线分割的双三角形 */
+        .grid-corner {
+            position: relative;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            min-height: 52px;
+            overflow: hidden;
+        }
+        .grid-corner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                45deg,
+                transparent calc(50% - 0.5px),
+                var(--border-glow) calc(50% - 0.5px),
+                var(--border-glow) calc(50% + 0.5px),
+                transparent calc(50% + 0.5px)
+            );
+        }
+        .corner-arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+        /* 左下：向下小三角，指向行维度 */
+        .corner-down {
+            left: 18px;
+            bottom: 14px;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 7px solid var(--accent-gold);
+            filter: drop-shadow(0 1px 2px rgba(201,169,110,0.4));
+        }
+        /* 右上：向右小三角，指向列维度 */
+        .corner-right {
+            right: 14px;
+            top: 18px;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 7px solid var(--accent-gold);
+            filter: drop-shadow(1px 0 2px rgba(201,169,110,0.4));
+        }
+
+        .grid-header {
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md); padding: 12px 10px;
+            text-align: center; font-size: 13px; font-weight: 600;
+            color: var(--accent-gold); letter-spacing: 0.5px;
+        }
+        .grid-cell {
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md); padding: 8px;
+            max-height: 340px; overflow-y: auto;
+            scrollbar-width: thin; scrollbar-color: var(--border-glow) transparent;
+        }
+        .grid-cell::-webkit-scrollbar { width: 5px; }
+        .grid-cell::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 4px; }
+        .clarity-group { margin-bottom: 8px; }
+        .clarity-group:last-child { margin-bottom: 0; }
+        .clarity-label {
+            font-size: 11px; font-weight: 600; padding: 4px 6px;
+            margin-bottom: 4px; border-bottom: 1px solid var(--border-subtle);
+            letter-spacing: 0.3px;
+        }
+        .tier-blue { color: var(--tier-blue); }
+        .tier-purple { color: var(--tier-purple); }
+        .tier-gold { color: var(--tier-gold); }
+        .tier-red { color: var(--tier-red); }
+
+        .entry-item {
+            display: flex; align-items: center; gap: 6px;
+            padding: 5px 6px; border-radius: var(--radius-sm);
+            cursor: pointer; transition: background 0.15s; font-size: 12px;
+            border: 1px solid transparent;
+        }
+        .entry-item:hover { background: var(--bg-card-hover); }
+        .entry-item.owned { background: var(--owned-bg); border-color: var(--owned-border); }
+        .entry-color {
+            flex: 1; min-width: 0; white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; color: var(--text-primary);
+        }
+        .entry-value {
+            font-size: 11px; color: var(--text-secondary); white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+        .entry-check {
+            width: 16px; height: 16px; border-radius: 50%;
+            border: 1.5px solid var(--text-muted);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: all 0.2s; font-size: 10px; color: transparent;
+        }
+        .entry-item.owned .entry-check {
+            background: #4ade80; border-color: #4ade80;
+            color: #0f0f12; font-weight: 700;
+        }
+
+        /* ---------- 列表视图 ---------- */
+        .list-wrap { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+        .list-group {
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg); overflow: hidden;
+        }
+        .list-group-header {
+            padding: 14px 20px; font-size: 15px; font-weight: 600;
+            color: var(--accent-gold); letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex; align-items: center; justify-content: space-between;
+            cursor: pointer; user-select: none;
+        }
+        .list-group-header .count { font-size: 12px; font-weight: 400; color: var(--text-secondary); }
+        .list-group-body {
+            padding: 12px 16px; display: flex; flex-direction: column; gap: 4px;
+            max-height: 400px; overflow-y: auto;
+            scrollbar-width: thin; scrollbar-color: var(--border-glow) transparent;
+        }
+        .list-group-body::-webkit-scrollbar { width: 5px; }
+        .list-group-body::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 4px; }
+        .list-entry {
+            display: flex; align-items: center; gap: 12px;
+            padding: 8px 10px; border-radius: var(--radius-sm);
+            cursor: pointer; transition: background 0.15s; font-size: 13px;
+            border: 1px solid transparent;
+        }
+        .list-entry:hover { background: var(--bg-card-hover); }
+        .list-entry.owned { background: var(--owned-bg); border-color: var(--owned-border); }
+        .list-entry .color-name { flex: 1; color: var(--text-primary); }
+        .list-entry .value-text {
+            font-variant-numeric: tabular-nums; color: var(--text-secondary);
+            font-size: 12px; min-width: 50px; text-align: right;
+        }
+        .list-entry .entry-check { margin-left: 4px; }
+
+        /* ---------- 单一元素视图 ---------- */
+        .single-card-wrap {
+            max-width: 500px; margin: 40px auto;
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        .single-card {
+            background: var(--bg-card); border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg); padding: 36px 40px;
+            box-shadow: var(--shadow-card); width: 100%;
+            display: flex; flex-direction: column; align-items: center; gap: 20px;
+        }
+        .single-card-icon { font-size: 48px; line-height: 1; }
+        .single-card-name {
+            font-size: 18px; font-weight: 600; text-align: center;
+            letter-spacing: 0.5px; line-height: 1.6;
+        }
+        .single-card-props {
+            width: 100%; display: flex; flex-direction: column; gap: 8px;
+            padding: 16px 20px; background: var(--bg-deep);
+            border-radius: var(--radius-md); border: 1px solid var(--border-subtle);
+        }
+        .single-prop { display: flex; justify-content: space-between; font-size: 13px; }
+        .single-prop-label { color: var(--text-secondary); }
+        .single-card-btn {
+            padding: 12px 32px; border-radius: var(--radius-sm);
+            font-size: 14px; font-family: var(--font-sans); cursor: pointer;
+            transition: all 0.2s; border: 1px solid transparent;
+            background: var(--accent-gold); color: #0f0f12; font-weight: 600;
+            width: 100%;
+        }
+        .single-card-btn:hover { background: #d4b87a; }
+        .single-card-btn.owned {
+            background: transparent; border-color: var(--owned-border);
+            color: #4ade80;
+        }
+        .single-card-btn.owned:hover { background: var(--owned-bg); }
+
+        /* ---------- 弹窗 ---------- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px); display: flex; align-items: center;
+            justify-content: center; z-index: 1000; opacity: 0;
+            pointer-events: none; transition: opacity 0.2s;
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; }
+        .modal-box {
+            background: var(--bg-card); border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg); padding: 28px 32px;
+            max-width: 420px; width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            transform: scale(0.95); transition: transform 0.2s;
+        }
+        .modal-overlay.show .modal-box { transform: scale(1); }
+        .modal-title { font-size: 16px; font-weight: 600; color: var(--accent-gold); margin-bottom: 12px; }
+        .modal-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px; }
+        .modal-desc .highlight { color: var(--text-primary); font-weight: 600; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+        .modal-actions button {
+            padding: 9px 22px; border-radius: var(--radius-sm);
+            font-size: 13px; font-family: var(--font-sans); cursor: pointer;
+            transition: all 0.2s; border: 1px solid transparent;
+        }
+        .btn-cancel { background: transparent; border-color: var(--border-subtle); color: var(--text-secondary); }
+        .btn-cancel:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+        .btn-confirm { background: var(--accent-gold); color: #0f0f12; font-weight: 600; }
+        .btn-confirm:hover { background: #d4b87a; }
+        .btn-confirm.remove { background: #ef4444; color: #fff; }
+        .btn-confirm.remove:hover { background: #dc2626; }
+
+        /* ---------- 空状态 ---------- */
+        .empty-hint { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; }
+        .empty-hint .gold { color: var(--accent-gold); }
+
+        /* ---------- 响应式 ---------- */
+        @media (max-width: 768px) {
+            body { padding: 16px 12px 40px; }
+            .header { flex-wrap: wrap; gap: 12px; }
+            .header-stats { margin-left: 0; width: 100%; justify-content: flex-start; }
+            .filters { padding: 12px 14px; gap: 10px; }
+            .filter-item { min-width: 100px; }
+            .grid-table { min-width: 700px; }
+            .grid-cell { max-height: 260px; }
+            .single-card { padding: 24px 20px; }
+            .special-card { flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px 18px; }
+            .special-right { width: 100%; justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 页头 -->
+    <header class="header">
+        <img class="header-icon"
+             src="https://patchwiki.biligame.com/images/dwrg/2/25/k820b6lwvve46w40goaipyyg2ivvh8n.png"
+             alt="项链图标"
+             onerror="this.style.display='none'">
+        <div class="header-text">
+            <h1>加页手记 · 项链收集图鉴</h1>
+            <p>筛选属性 · 自动组织视图 · 点击收集</p>
+        </div>
+        <div class="header-stats">
+            <span>已收集 <strong id="stat-owned">0</strong></span>
+            <span>总条目 <strong id="stat-total">0</strong></span>
+        </div>
+    </header>
+
+    <!-- 终极收藏卡片 -->
+    <div class="special-section" id="special-section"></div>
+
+    <!-- 筛选栏 -->
+    <div class="filters">
+        <div class="filter-item">
+            <label>链身材质</label>
+            <select id="filter-chain" onchange="onFilterChange('chain')"></select>
+        </div>
+        <div class="filter-item">
+            <label>流光火彩</label>
+            <select id="filter-fire" onchange="onFilterChange('fire')"></select>
+        </div>
+        <div class="filter-item">
+            <label>宝石净度</label>
+            <select id="filter-clarity" onchange="onFilterChange('clarity')"></select>
+        </div>
+        <div class="filter-item">
+            <label>宝石颜色</label>
+            <select id="filter-color" onchange="onFilterChange('color')"></select>
+        </div>
+        <div class="filter-item">
+            <label>宝石价值</label>
+            <select id="filter-value" onchange="onFilterChange('value')"></select>
+        </div>
+        <button class="btn-action" onclick="resetFilters()">重置筛选</button>
+        <button class="btn-action gold" onclick="exportSelection()">导出选择</button>
+        <button class="btn-action gold" onclick="triggerImport()">加载选择</button>
+        <input type="file" id="import-file" accept=".json,application/json" style="display:none" onchange="handleImportFile(event)">
+    </div>
+
+    <!-- 视图信息 -->
+    <div class="view-info" id="view-info"></div>
+
+    <!-- 内容区 -->
+    <main id="content"></main>
+
+    <!-- 确认弹窗 -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-box">
+            <div class="modal-title" id="modal-title">确认操作</div>
+            <div class="modal-desc" id="modal-desc"></div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">取消</button>
+                <button class="btn-confirm" id="modal-confirm" onclick="confirmToggle()">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 数据定义 ==========
+        const CHAINS = [
+            { name: '古铜',     tier: 'blue',   value: 10,  cls: 'tier-blue'   },
+            { name: '素银',     tier: 'purple', value: 20,  cls: 'tier-purple' },
+            { name: '纯金',     tier: 'gold',   value: 60,  cls: 'tier-gold'   },
+            { name: '璀光秘银', tier: 'red',    value: 100, cls: 'tier-red'    }
+        ];
+
+        const FIRES = [
+            { name: '微光',     tier: 'blue',   value: 10,  cls: 'tier-blue'   },
+            { name: '星芒',     tier: 'purple', value: 20,  cls: 'tier-purple' },
+            { name: '辉耀',     tier: 'gold',   value: 60,  cls: 'tier-gold'   },
+            { name: '虹彩幻影', tier: 'red',    value: 100, cls: 'tier-red'    }
+        ];
+
+        const CLARITIES = [
+            { name: '黯淡',     tier: 'blue',   value: 10,  cls: 'tier-blue'   },
+            { name: '微瑕',     tier: 'purple', value: 20,  cls: 'tier-purple' },
+            { name: '无瑕',     tier: 'gold',   value: 60,  cls: 'tier-gold'   },
+            { name: '稀世瑰宝', tier: 'red',    value: 100, cls: 'tier-red'    }
+        ];
+
+        const COLORS = ['湖光绿', '柠檬黄', '薰衣草', '石榴红', '星空蓝'];
+        const ITEM_NAME = '被诅咒的蓝宝石';
+
+        // ========== 组合合法性规则 ==========
+        function isLegal(ch, fr, cl, co) {
+            const has100 =
+                CHAINS[ch].value === 100 ||
+                FIRES[fr].value === 100 ||
+                CLARITIES[cl].value === 100;
+            if (!has100) return true;
+            return CHAINS[ch].value === 100 &&
+                   FIRES[fr].value === 100 &&
+                   CLARITIES[cl].value === 100 &&
+                   COLORS[co] === '星空蓝';
+        }
+
+        // ========== 工具函数 ==========
+        function getEntryId(ci, fi, cli, coi) {
+            return `${ci}-${fi}-${cli}-${coi}`;
+        }
+        function getValue(ci, fi, cli) {
+            return CHAINS[ci].value + FIRES[fi].value + CLARITIES[cli].value;
+        }
+        function formatValue(v) { return v + 'w'; }
+
+        function getEntryDimValue(entry, dimKey) {
+            switch (dimKey) {
+                case 'chain': return CHAINS[entry.ch].name;
+                case 'fire': return FIRES[entry.fr].name;
+                case 'clarity': return CLARITIES[entry.cl].name;
+                case 'color': return COLORS[entry.co];
+                case 'value': return getValue(entry.ch, entry.fr, entry.cl);
+                default: return null;
+            }
+        }
+        function getDimRawValue(dimKey, item) {
+            if (dimKey === 'value') return item.raw;
+            return item.name;
+        }
+
+        // ========== 终极收藏 ==========
+        const SPECIAL_ENTRY = { ch: 3, fr: 3, cl: 3, co: 4 };
+        const SPECIAL_ID = getEntryId(3, 3, 3, 4);
+
+        // ========== 合法条目 ==========
+        const ALL_LEGAL_ENTRIES = [];
+        for (let ch = 0; ch < CHAINS.length; ch++)
+            for (let fr = 0; fr < FIRES.length; fr++)
+                for (let cl = 0; cl < CLARITIES.length; cl++)
+                    for (let co = 0; co < COLORS.length; co++)
+                        if (isLegal(ch, fr, cl, co)) ALL_LEGAL_ENTRIES.push({ ch, fr, cl, co });
+
+        const NORMAL_ENTRIES = ALL_LEGAL_ENTRIES.filter(
+            e => getEntryId(e.ch, e.fr, e.cl, e.co) !== SPECIAL_ID
+        );
+        const ALL_LEGAL_ID_SET = new Set(ALL_LEGAL_ENTRIES.map(e => getEntryId(e.ch, e.fr, e.cl, e.co)));
+
+        const ALL_VALUES_SET = new Set();
+        ALL_LEGAL_ENTRIES.forEach(e => ALL_VALUES_SET.add(getValue(e.ch, e.fr, e.cl)));
+        const SORTED_VALUES = [...ALL_VALUES_SET].sort((a, b) => a - b);
+
+        const DIM_MAP = {
+            chain:   { label: '链身材质', list: CHAINS },
+            fire:    { label: '流光火彩', list: FIRES },
+            clarity: { label: '宝石净度', list: CLARITIES },
+            color:   { label: '宝石颜色', list: COLORS.map(c => ({ name: c })) },
+            value:   { label: '宝石价值', list: SORTED_VALUES.map(v => ({ name: v + 'w', raw: v })) }
+        };
+        const DIM_KEYS = ['chain', 'fire', 'clarity', 'color', 'value'];
+
+        function getAxisList(dimKey) {
+            const list = DIM_MAP[dimKey].list;
+            if (dimKey === 'chain' || dimKey === 'fire' || dimKey === 'clarity') {
+                return list.filter(item => item.value !== 100);
+            }
+            if (dimKey === 'value') {
+                return list.filter(item => item.raw !== 300);
+            }
+            return list;
+        }
+
+        // ========== 状态 ==========
+        let filters = { chain: null, fire: null, clarity: null, color: null, value: null };
+        const STORAGE_KEY = 'dwrg_necklace_collection';
+        let ownedSet = new Set();
+        let pendingEntry = null;
+        let pendingImportData = null;
+        let modalMode = 'toggle';
+
+        // ========== 初始化 ==========
+        function init() {
+            loadOwned();
+            initFilters();
+            render();
+        }
+
+        function loadOwned() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const arr = JSON.parse(raw);
+                    if (Array.isArray(arr)) ownedSet = new Set(arr.filter(id => ALL_LEGAL_ID_SET.has(id)));
+                }
+            } catch (e) { ownedSet = new Set(); }
+        }
+        function saveOwned() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...ownedSet])); } catch (e) {}
+        }
+
+        function initFilters() {
+            document.getElementById('filter-chain').innerHTML =
+                '<option value="">全部</option>' +
+                getAxisList('chain').map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            document.getElementById('filter-fire').innerHTML =
+                '<option value="">全部</option>' +
+                getAxisList('fire').map(f => `<option value="${f.name}">${f.name}</option>`).join('');
+            document.getElementById('filter-clarity').innerHTML =
+                '<option value="">全部</option>' +
+                getAxisList('clarity').map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            document.getElementById('filter-color').innerHTML =
+                '<option value="">全部</option>' +
+                getAxisList('color').map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            document.getElementById('filter-value').innerHTML =
+                '<option value="">全部</option>' +
+                getAxisList('value').map(v => `<option value="${v.raw}">${v.name}</option>`).join('');
+        }
+
+        // ========== 筛选 ==========
+        function entryMatchesFilters(entry) {
+            for (const key of DIM_KEYS) {
+                if (filters[key] !== null && getEntryDimValue(entry, key) !== filters[key]) return false;
+            }
+            return true;
+        }
+
+        // ========== 渲染入口 ==========
+        function render() {
+            updateStats();
+            renderSpecialCard();
+            const unfilteredKeys = DIM_KEYS.filter(k => filters[k] === null);
+            const content = document.getElementById('content');
+            if (unfilteredKeys.length >= 2) renderTable(unfilteredKeys, content);
+            else if (unfilteredKeys.length === 1) renderList(unfilteredKeys, content);
+            else renderSingle(content);
+        }
+
+        function updateStats() {
+            document.getElementById('stat-owned').textContent = ownedSet.size;
+            document.getElementById('stat-total').textContent = ALL_LEGAL_ENTRIES.length;
+        }
+
+        // ========== 终极收藏卡片 ==========
+        function renderSpecialCard() {
+            const container = document.getElementById('special-section');
+            const e = SPECIAL_ENTRY;
+            const isOwned = ownedSet.has(SPECIAL_ID);
+            const val = getValue(e.ch, e.fr, e.cl);
+            container.innerHTML = `
+                <div class="special-card">
+                    <div class="special-icon">💎</div>
+                    <div class="special-body">
+                        <div class="special-label">✦ 虚妄杰作 · ${ITEM_NAME}</div>
+                        <div class="special-name">
+                            <span class="${CHAINS[e.ch].cls}">${CHAINS[e.ch].name}</span>
+                            <span class="sep">·</span>
+                            <span class="${FIRES[e.fr].cls}">${FIRES[e.fr].name}</span>
+                            <span class="sep">·</span>
+                            <span class="${CLARITIES[e.cl].cls}">${CLARITIES[e.cl].name}</span>
+                            <span class="sep">·</span>
+                            <span>${COLORS[e.co]}</span>
+                        </div>
+                    </div>
+                    <div class="special-right">
+                        <div class="special-value">${formatValue(val)}</div>
+                        <button class="special-btn ${isOwned ? 'owned' : ''}" onclick="requestToggleSpecial()">
+                            ${isOwned ? '已收集 · 点击移除' : '点击收集'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        function requestToggleSpecial() {
+            const e = SPECIAL_ENTRY;
+            requestToggle(SPECIAL_ID, e.ch, e.fr, e.cl, e.co);
+        }
+
+        // ========== 表格视图 ==========
+        function renderTable(unfilteredKeys, content) {
+            const rowKey = unfilteredKeys[0];
+            const colKey = unfilteredKeys[1];
+            const remainingKeys = unfilteredKeys.slice(2);
+            const rowList = getAxisList(rowKey);
+            const colList = getAxisList(colKey);
+
+            document.getElementById('view-info').innerHTML =
+                `<span class="tag">表格视图</span>` +
+                `行：<span style="color:var(--accent-gold)">${DIM_MAP[rowKey].label}</span>` +
+                ` × ` +
+                `列：<span style="color:var(--accent-gold)">${DIM_MAP[colKey].label}</span>` +
+                `　剩余未筛选：${remainingKeys.map(k => DIM_MAP[k].label).join('、') || '无'}`;
+
+            const gridStyle = `grid-template-columns: 120px repeat(${colList.length}, 1fr);`;
+            let html = `<div class="table-wrap"><div class="grid-table" style="${gridStyle}">`;
+
+            // 左上角：对角线分隔 + 双三角形
+            html += `
+                <div class="grid-corner" title="${DIM_MAP[rowKey].label} ↓ / ${DIM_MAP[colKey].label} →">
+                    <div class="corner-arrow corner-down"></div>
+                    <div class="corner-arrow corner-right"></div>
+                </div>
+            `;
+
+            colList.forEach(c => {
+                html += `<div class="grid-header"><span class="${c.cls || ''}">${c.name}</span></div>`;
+            });
+            rowList.forEach(r => {
+                html += `<div class="grid-header" style="text-align:left;padding-left:16px;"><span class="${r.cls || ''}">${r.name}</span></div>`;
+                colList.forEach(c => {
+                    const cellEntries = getMatchingEntries(rowKey, getDimRawValue(rowKey, r), colKey, getDimRawValue(colKey, c));
+                    html += `<div class="grid-cell">${renderCell(cellEntries, remainingKeys, rowKey, colKey)}</div>`;
+                });
+            });
+            html += `</div></div>`;
+            content.innerHTML = html;
+        }
+
+        function getMatchingEntries(rowKey, rowRaw, colKey, colRaw) {
+            const results = [];
+            NORMAL_ENTRIES.forEach(entry => {
+                if (!entryMatchesFilters(entry)) return;
+                if (getEntryDimValue(entry, rowKey) !== rowRaw) return;
+                if (getEntryDimValue(entry, colKey) !== colRaw) return;
+                results.push(entry);
+            });
+            return results;
+        }
+
+        function renderCell(cellEntries, remainingKeys, rowKey, colKey) {
+            if (cellEntries.length === 0) {
+                return '<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:20px 0;">无匹配</div>';
+            }
+
+            let groupBy = null;
+            if (remainingKeys.includes('clarity')) groupBy = 'clarity';
+            else if (remainingKeys.includes('color')) groupBy = 'color';
+
+            if (groupBy) {
+                const groups = new Map();
+                cellEntries.forEach(e => {
+                    const gVal = groupBy === 'clarity' ? CLARITIES[e.cl].name : COLORS[e.co];
+                    if (!groups.has(gVal)) groups.set(gVal, []);
+                    groups.get(gVal).push(e);
+                });
+
+                let html = '';
+                groups.forEach((entries, gVal) => {
+                    let label;
+                    if (groupBy === 'clarity') {
+                        const c = CLARITIES.find(x => x.name === gVal);
+                        label = `<div class="clarity-label ${c.cls}">${gVal}</div>`;
+                    } else {
+                        label = `<div class="clarity-label">${gVal}</div>`;
+                    }
+                    html += `<div class="clarity-group">${label}`;
+                    entries.forEach(e => { html += renderEntryItem(e, remainingKeys, groupBy); });
+                    html += `</div>`;
+                });
+                return html;
+            } else {
+                return cellEntries.map(e => renderEntryItem(e, remainingKeys, null)).join('');
+            }
+        }
+
+        function renderEntryItem(entry, remainingKeys, groupBy) {
+            const id = getEntryId(entry.ch, entry.fr, entry.cl, entry.co);
+            const isOwned = ownedSet.has(id);
+            const val = getValue(entry.ch, entry.fr, entry.cl);
+            const showValue = remainingKeys.includes('value');
+
+            const clarityCls = CLARITIES[entry.cl].cls;
+            const colorName = COLORS[entry.co];
+
+            // 有属性前缀（颜色）时，省略“被诅咒的蓝宝石”字样
+            const showColorName = remainingKeys.includes('color') && groupBy !== 'color';
+
+            let text;
+            if (showColorName) {
+                text = `<span style="color:var(--text-muted)">${colorName}</span>`;
+            } else {
+                text = `<span class="${clarityCls}">${ITEM_NAME}</span>`;
+            }
+
+            return `
+                <div class="entry-item ${isOwned ? 'owned' : ''}" onclick="requestToggle('${id}', ${entry.ch}, ${entry.fr}, ${entry.cl}, ${entry.co})">
+                    <span class="entry-color">${text}</span>
+                    ${showValue ? `<span class="entry-value">${formatValue(val)}</span>` : ''}
+                    <span class="entry-check">${isOwned ? '✓' : ''}</span>
+                </div>
+            `;
+        }
+
+        // ========== 列表视图 ==========
+        function renderList(unfilteredKeys, content) {
+            const groupKey = unfilteredKeys[0];
+            const groupList = getAxisList(groupKey);
+
+            document.getElementById('view-info').innerHTML =
+                `<span class="tag">列表视图</span>` +
+                `按 <span style="color:var(--accent-gold)">${DIM_MAP[groupKey].label}</span> 分组`;
+
+            const allMatching = NORMAL_ENTRIES.filter(e => entryMatchesFilters(e));
+            let html = '<div class="list-wrap">';
+            let totalGroups = 0;
+
+            groupList.forEach(g => {
+                const gRaw = getDimRawValue(groupKey, g);
+                const entries = allMatching.filter(e => getEntryDimValue(e, groupKey) === gRaw);
+                if (entries.length === 0) return;
+                totalGroups++;
+
+                const ownedInGroup = entries.filter(e => ownedSet.has(getEntryId(e.ch, e.fr, e.cl, e.co))).length;
+                html += `
+                    <div class="list-group">
+                        <div class="list-group-header" onclick="toggleGroup(this)">
+                            <span><span class="${g.cls || ''}">${g.name}</span></span>
+                            <span class="count">${ownedInGroup} / ${entries.length}</span>
+                        </div>
+                        <div class="list-group-body">
+                `;
+                entries.forEach(e => {
+                    const id = getEntryId(e.ch, e.fr, e.cl, e.co);
+                    const isOwned = ownedSet.has(id);
+                    const val = getValue(e.ch, e.fr, e.cl);
+                    const clarityCls = CLARITIES[e.cl].cls;
+                    const colorName = COLORS[e.co];
+                    const showVal = groupKey !== 'value';
+                    const showColorName = groupKey !== 'color';
+
+                    let text;
+                    if (showColorName) {
+                        text = `<span style="color:var(--text-muted)">${colorName}</span> · <span class="${clarityCls}">${ITEM_NAME}</span>`;
+                    } else {
+                        text = `<span class="${clarityCls}">${ITEM_NAME}</span>`;
+                    }
+
+                    html += `
+                        <div class="list-entry ${isOwned ? 'owned' : ''}" onclick="requestToggle('${id}', ${e.ch}, ${e.fr}, ${e.cl}, ${e.co})">
+                            <span class="color-name">${text}</span>
+                            ${showVal ? `<span class="value-text">${formatValue(val)}</span>` : ''}
+                            <span class="entry-check">${isOwned ? '✓' : ''}</span>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+            });
+
+            if (totalGroups === 0) html += '<div class="empty-hint">无匹配条目</div>';
+            html += '</div>';
+            content.innerHTML = html;
+        }
+
+        function toggleGroup(headerEl) {
+            const body = headerEl.nextElementSibling;
+            if (body) body.style.display = body.style.display === 'none' ? '' : 'none';
+        }
+
+        // ========== 单一元素视图 ==========
+        function renderSingle(content) {
+            const matching = NORMAL_ENTRIES.filter(e => entryMatchesFilters(e));
+            document.getElementById('view-info').innerHTML = `<span class="tag">单一元素</span>所有属性已筛选`;
+            if (matching.length === 0) {
+                content.innerHTML = '<div class="empty-hint">无匹配条目</div>';
+                return;
+            }
+            let html = '<div class="single-card-wrap">';
+            matching.forEach(e => {
+                const id = getEntryId(e.ch, e.fr, e.cl, e.co);
+                const isOwned = ownedSet.has(id);
+                const val = getValue(e.ch, e.fr, e.cl);
+                html += `
+                    <div class="single-card">
+                        <div class="single-card-icon">💎</div>
+                        <div class="single-card-name">
+                            <span class="${CLARITIES[e.cl].cls}">${ITEM_NAME}</span>
+                        </div>
+                        <div class="single-card-props">
+                            <div class="single-prop"><span class="single-prop-label">链身材质</span><span class="${CHAINS[e.ch].cls}">${CHAINS[e.ch].name}</span></div>
+                            <div class="single-prop"><span class="single-prop-label">流光火彩</span><span class="${FIRES[e.fr].cls}">${FIRES[e.fr].name}</span></div>
+                            <div class="single-prop"><span class="single-prop-label">宝石净度</span><span class="${CLARITIES[e.cl].cls}">${CLARITIES[e.cl].name}</span></div>
+                            <div class="single-prop"><span class="single-prop-label">宝石颜色</span><span>${COLORS[e.co]}</span></div>
+                            <div class="single-prop"><span class="single-prop-label">宝石价值</span><span>${formatValue(val)}</span></div>
+                        </div>
+                        <button class="single-card-btn ${isOwned ? 'owned' : ''}" onclick="requestToggle('${id}', ${e.ch}, ${e.fr}, ${e.cl}, ${e.co})">
+                            ${isOwned ? '已收集 · 点击移除' : '点击收集'}
+                        </button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            content.innerHTML = html;
+        }
+
+        // ========== 交互 ==========
+        function onFilterChange(dimKey) {
+            const val = document.getElementById('filter-' + dimKey).value;
+            if (val === '') filters[dimKey] = null;
+            else if (dimKey === 'value') filters[dimKey] = parseInt(val, 10);
+            else filters[dimKey] = val;
+            render();
+        }
+
+        function resetFilters() {
+            filters = { chain: null, fire: null, clarity: null, color: null, value: null };
+            document.querySelectorAll('.filter-item select').forEach(sel => { sel.value = ''; });
+            render();
+        }
+
+        // ========== 导出 / 加载 ==========
+        function exportSelection() {
+            const data = [...ownedSet].sort();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'necklace_collection.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function triggerImport() {
+            document.getElementById('import-file').click();
+        }
+
+        function handleImportFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!Array.isArray(data)) throw new Error('格式错误：需要 ID 数组');
+                    const validIds = data.filter(id => ALL_LEGAL_ID_SET.has(id));
+                    const invalidCount = data.length - validIds.length;
+                    let msg = `将加载 <span class="highlight">${validIds.length}</span> 个条目`;
+                    if (invalidCount > 0) msg += `（忽略 <span style="color:var(--tier-red)">${invalidCount}</span> 个无效条目）`;
+                    msg += `，并替换当前选择。确定吗？`;
+                    showImportConfirm(validIds, msg);
+                } catch (err) {
+                    alert('加载失败：' + err.message);
+                }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function showImportConfirm(validIds, msg) {
+            pendingImportData = validIds;
+            modalMode = 'import';
+            document.getElementById('modal-title').textContent = '确认加载';
+            document.getElementById('modal-desc').innerHTML = msg;
+            const confirmBtn = document.getElementById('modal-confirm');
+            confirmBtn.textContent = '确认加载';
+            confirmBtn.className = 'btn-confirm';
+            document.getElementById('modal').classList.add('show');
+        }
+
+        // ========== 收集切换 ==========
+        function requestToggle(id, ch, fr, cl, co) {
+            modalMode = 'toggle';
+            const isOwned = ownedSet.has(id);
+            pendingEntry = { id, ch, fr, cl, co, isOwned };
+            const action = isOwned ? '移除' : '标记为已拥有';
+            document.getElementById('modal-title').textContent = isOwned ? '确认移除' : '确认收集';
+            document.getElementById('modal-desc').innerHTML =
+                `确定要${action}以下项链吗？<br>` +
+                `<span class="highlight">${ITEM_NAME}</span><br>` +
+                `属性：${CHAINS[ch].name} · ${FIRES[fr].name} · ${CLARITIES[cl].name} · ${COLORS[co]}<br>` +
+                `价值：${formatValue(getValue(ch, fr, cl))}`;
+            const confirmBtn = document.getElementById('modal-confirm');
+            confirmBtn.textContent = isOwned ? '确认移除' : '确认收集';
+            confirmBtn.className = 'btn-confirm' + (isOwned ? ' remove' : '');
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function confirmToggle() {
+            if (modalMode === 'import') {
+                if (pendingImportData) {
+                    ownedSet = new Set(pendingImportData);
+                    saveOwned();
+                    closeModal();
+                    render();
+                }
+                return;
+            }
+            if (!pendingEntry) return;
+            const { id, isOwned } = pendingEntry;
+            if (isOwned) ownedSet.delete(id);
+            else ownedSet.add(id);
+            saveOwned();
+            closeModal();
+            render();
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+            pendingEntry = null;
+            pendingImportData = null;
+            modalMode = 'toggle';
+        }
+
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // ========== 启动 ==========
+        init();
+    </script>
+</body>
+</html>
